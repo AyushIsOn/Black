@@ -73,51 +73,9 @@ body {
   white-space: nowrap;
 }
 
-.SitePreloader_borders__AUaAA {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
 
-/* LOADER PAGE viewport borders - separate from main page */
-.SitePreloader_sitePreloader__cg1wG .viewport-borders {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  inset: 0;
-  padding: 1.125rem 4.1666666667vw 3rem;
-  pointer-events: none;
-  z-index: 1;
-}
 
-.SitePreloader_sitePreloader__cg1wG .border {
-  height: 100%;
-  width: 100%;
-}
 
-.SitePreloader_sitePreloader__cg1wG .border svg {
-  height: 100%;
-  width: 100%;
-  -webkit-mask-image: radial-gradient(at center bottom, transparent 40%, #000 60%);
-  mask-image: radial-gradient(at center bottom, transparent 40%, #000 60%);
-}
-
-.SitePreloader_sitePreloader__cg1wG .border svg line,
-.SitePreloader_sitePreloader__cg1wG .border svg path,
-.SitePreloader_sitePreloader__cg1wG .border svg polyline {
-  stroke: var(--luminosity-primary-100, #ffffff);
-  stroke-width: 0.075rem;
-  vector-effect: non-scaling-stroke;
-}
-
-.SitePreloader_sitePreloader__cg1wG .border svg line,
-.SitePreloader_sitePreloader__cg1wG .border svg path {
-  opacity: 0.16;
-}
-
-.SitePreloader_sitePreloader__cg1wG .border svg polyline {
-  opacity: 1;
-}
 
 .copySizeLabelS {
   font-size: 10px;
@@ -137,15 +95,6 @@ body {
   .SitePreloader_terminal__ginb_ {
     opacity: 1;
     padding: 2.25rem;
-  }
-  
-  .SitePreloader_sitePreloader__cg1wG .viewport-borders {
-    padding: 1.125rem 1.125rem 3rem;
-  }
-  
-  .SitePreloader_sitePreloader__cg1wG .border svg {
-    -webkit-mask-image: radial-gradient(at center bottom, transparent, #000);
-    mask-image: radial-gradient(at center bottom, transparent, #000);
   }
 }
 
@@ -722,4 +671,66 @@ a {
   }
 }
 
-/* Clean up - remove unused BitkraftVC loader styles at end */
+/* =============================================
+   STAR ANIMATION BACKGROUND - Background stars for main page
+   ============================================= */
+
+.canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.canvas-container.visible {
+  opacity: 1;
+}
+
+#starsCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Hide stars during loader and menu overlay */
+.SitePreloader_sitePreloader__cg1wG ~ .canvas-container {
+  opacity: 0;
+}
+
+.menu-overlay.active ~ .canvas-container {
+  opacity: 0;
+}
+
+/* Purple cosmic gradient background behind stars */
+.cosmic-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -20;
+  background-image: 
+    radial-gradient(circle at 50% 100%, rgba(70, 85, 110, 0.5) 0%, transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.4) 0%, transparent 70%),
+    radial-gradient(circle at 50% 100%, rgba(181, 184, 208, 0.3) 0%, transparent 80%);
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.cosmic-gradient.visible {
+  opacity: 1;
+}
+
+/* Hide cosmic gradient during loader and menu overlay */
+.SitePreloader_sitePreloader__cg1wG ~ .cosmic-gradient {
+  opacity: 0;
+}
+
+.menu-overlay.active ~ .cosmic-gradient {
+  opacity: 0;
+}

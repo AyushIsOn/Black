@@ -2,14 +2,8 @@
 function initSitePreloader() {
   const preloader = document.getElementById('sitePreloader');
   const progressNumber = document.getElementById('progressNumber');
-  const preloaderBorder = preloader.querySelector('.viewport-borders .border');
   
   if (!preloader || !progressNumber) return;
-  
-  // Create viewport border for preloader using same system
-  if (preloaderBorder) {
-    createViewportBorderForElement(preloaderBorder);
-  }
   
   let progress = 0;
   const progressInterval = setInterval(() => {
@@ -25,6 +19,10 @@ function initSitePreloader() {
         preloader.style.transition = 'opacity 1s ease';
         setTimeout(() => {
           preloader.style.display = 'none';
+          // Initialize star animation after preloader completes
+          setTimeout(() => {
+            initStarAnimation();
+          }, 500);
         }, 1000);
       }, 500);
     }
@@ -70,7 +68,7 @@ function createViewportBorderForElement(borderElement) {
     `0.5,15 0.6,9.2 9.3,0.5 15,0.5`,
     `${width * 0.98},0.5 ${width * 0.987},0.5 ${width - 0.5},9.2 ${width - 0.5},15`,
     `${width - 0.5},${height - 15} ${width - 0.5},${height - 9.2} ${width * 0.987},${height - 0.5} ${width * 0.98},${height - 0.5}`,
-    `15,${height - 0.5} 9.2,${height - 0.5} 0.5,${height - 9.2} 0.5,${height - 15}`
+    `15,${height - 0.5} 9.2,${height - 0.5} 0.5,${height - 0.5 - 9.2} 0.5,${height - 0.5 - 15}`
   ];
 
   corners.forEach(points => {
@@ -89,12 +87,12 @@ function createViewportBorderForElement(borderElement) {
 
 // Circular Futuristic Navigation Menu
 const menuItems = [
-  { label: "Vision", icon: "scan-sharp", href: "#vision" },
-  { label: "Portfolio", icon: "layers-sharp", href: "#portfolio" },
-  { label: "People", icon: "person-sharp", href: "#people" },
-  { label: "Insights", icon: "browsers-sharp", href: "#insights" },
-  { label: "Careers", icon: "stats-chart-sharp", href: "#careers" },
-  { label: "About Us", icon: "reader-sharp", href: "#about" },
+  { label: "PROBABILITY BAY", icon: "scan-sharp", href: "#vision" },
+  { label: "SUPERPOSITION TOWER", icon: "layers-sharp", href: "#portfolio" },
+  { label: "STATE CHAMBER", icon: "person-sharp", href: "#people" },
+  { label: "ENTANGLEMENT BRIDGE", icon: "browsers-sharp", href: "#insights" },
+  { label: "TUNNELING VAULT", icon: "stats-chart-sharp", href: "#careers" },
+  { label: "QUANTUM ARCHIVE", icon: "reader-sharp", href: "#about" },
 ];
 
 let isOpen = false;
@@ -547,13 +545,14 @@ function toggleMenu() {
     isOpen = true;
     new Audio("/public/menu-open.mp3").play();
 
-    // Hide drag component when menu opens
+    // Hide drag component and stars when menu opens
     const dragToStart = document.querySelector('.drag-to-start');
     gsap.to(dragToStart, {
       opacity: 0,
       duration: 0.3,
       ease: "power2.out"
     });
+    hideStarAnimation();
 
     gsap.to(menuOverlay, {
       opacity: 1,
@@ -646,13 +645,14 @@ function toggleMenu() {
         menuOverlay.style.pointerEvents = "none";
         isMenuAnimating = false;
         
-        // Show drag component when menu closes
+        // Show drag component and stars when menu closes
         const dragToStart = document.querySelector('.drag-to-start');
         gsap.to(dragToStart, {
           opacity: 1,
           duration: 0.3,
           ease: "power2.out"
         });
+        showStarAnimation();
       },
     });
   }
@@ -774,3 +774,153 @@ window.addEventListener('resize', () => {
     if (dragRipple) gsap.set(dragRipple, { opacity: 0, scale: 1 });
   }
 });
+
+// Star Animation System
+let starsRenderer = null;
+let starsCamera = null;
+let starsScene = null;
+let starsActive = false;
+let mouseX = 0;
+let mouseY = 0;
+let targetCameraX = 0;
+let targetCameraY = 0;
+let currentCameraX = 0;
+let currentCameraY = 0;
+
+function initStarAnimation() {
+  const canvas = document.getElementById('starsCanvas');
+  const canvasContainer = document.querySelector('.canvas-container');
+  
+  if (!canvas || starsActive) return;
+  
+  try {
+    // Initialize WebGL renderer for stars
+    starsRenderer = new WebGLRenderer(canvas);
+    
+    // Setup camera with closer zoom for parallax effect
+    starsCamera = new Camera();
+    starsCamera.position.set(0, 0, 4); // Closer zoom (was 8)
+    starsCamera.aspect = starsRenderer.aspectRatio;
+    starsCamera.updateMatrices();
+    
+    // Create stars scene
+    starsScene = new IntroSceneManager(starsRenderer);
+    starsScene.init();
+    
+    // Setup mouse tracking for parallax
+    setupParallaxControls();
+    
+    // Show the canvas, cosmic gradient, and hero section with delay for smooth transition
+    setTimeout(() => {
+      canvasContainer.classList.add('visible');
+      const cosmicGradient = document.querySelector('.cosmic-gradient');
+      const heroSection = document.querySelector('.hero-section');
+      if (cosmicGradient) {
+        cosmicGradient.classList.add('visible');
+      }
+      if (heroSection) {
+        heroSection.classList.add('visible');
+      }
+    }, 500);
+    
+    starsActive = true;
+    console.log('Star animation with parallax initialized successfully');
+    
+    // Start the render loop with parallax
+    function renderStars() {
+      if (!starsActive || !starsRenderer || !starsScene) return;
+      
+      try {
+        // Smooth camera movement for parallax
+        currentCameraX += (targetCameraX - currentCameraX) * 0.02;
+        currentCameraY += (targetCameraY - currentCameraY) * 0.02;
+        
+        // Apply subtle camera movement
+        starsCamera.position.x = currentCameraX;
+        starsCamera.position.y = currentCameraY;
+        starsCamera.updateMatrices();
+        
+        starsScene.update();
+        starsScene.draw(starsCamera);
+      } catch (error) {
+        console.error('Star render error:', error);
+        starsActive = false;
+        return;
+      }
+      
+      requestAnimationFrame(renderStars);
+    }
+    renderStars();
+    
+    // Handle resize
+    window.addEventListener('resize', () => {
+      if (starsRenderer && starsCamera) {
+        starsRenderer.resize();
+        starsCamera.aspect = starsRenderer.aspectRatio;
+        starsCamera.updateMatrices();
+      }
+    });
+    
+  } catch (error) {
+    console.error('Failed to initialize star animation:', error);
+  }
+}
+
+function hideStarAnimation() {
+  const canvasContainer = document.querySelector('.canvas-container');
+  const cosmicGradient = document.querySelector('.cosmic-gradient');
+  const heroSection = document.querySelector('.hero-section');
+  if (canvasContainer) {
+    canvasContainer.classList.remove('visible');
+  }
+  if (cosmicGradient) {
+    cosmicGradient.classList.remove('visible');
+  }
+  if (heroSection) {
+    heroSection.classList.remove('visible');
+  }
+}
+
+function showStarAnimation() {
+  const canvasContainer = document.querySelector('.canvas-container');
+  const cosmicGradient = document.querySelector('.cosmic-gradient');
+  const heroSection = document.querySelector('.hero-section');
+  if (canvasContainer && starsActive) {
+    canvasContainer.classList.add('visible');
+  }
+  if (cosmicGradient && starsActive) {
+    cosmicGradient.classList.add('visible');
+  }
+  if (heroSection && starsActive) {
+    heroSection.classList.add('visible');
+  }
+}
+
+function setupParallaxControls() {
+  // Mouse tracking for parallax effect
+  document.addEventListener('mousemove', (e) => {
+    if (!starsActive) return;
+    
+    // Normalize mouse position to -1 to 1 range
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    
+    // Calculate subtle camera target positions (very small movement)
+    const parallaxStrength = 0.3; // Adjust this for more/less movement
+    targetCameraX = mouseX * parallaxStrength;
+    targetCameraY = mouseY * parallaxStrength;
+  });
+  
+  // Touch tracking for mobile parallax
+  document.addEventListener('touchmove', (e) => {
+    if (!starsActive || !e.touches[0]) return;
+    
+    const touch = e.touches[0];
+    mouseX = (touch.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(touch.clientY / window.innerHeight) * 2 + 1;
+    
+    const parallaxStrength = 0.3;
+    targetCameraX = mouseX * parallaxStrength;
+    targetCameraY = mouseY * parallaxStrength;
+  }, { passive: true });
+}

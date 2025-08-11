@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Purple Cosmic Gradient Background (behind stars) -->
+    <div class="cosmic-gradient"></div>
+    
+    <!-- Star Animation Canvas Background -->
+    <div class="canvas-container">
+      <canvas id="starsCanvas"></canvas>
+    </div>
+
     <!-- BitkraftVC Site Preloader -->
     <div class="SitePreloader_sitePreloader__cg1wG" id="sitePreloader">
       <div class="SitePreloader_terminal__ginb_ copySizeLabelS" aria-disabled="true">
@@ -57,21 +65,7 @@
         <div class="SitePreloader_hidden__rLXw6">Loading Percentage:</div>
         <span id="progressNumber">0</span>
       </span>
-      <div class="viewport-borders SitePreloader_borders__AUaAA">
-        <div class="border">
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="0.075" vector-effect="non-scaling-stroke"/>
-              </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)"/>
-            <polyline points="0,0 100,0 100,100 0,100 0,0" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="0.075" vector-effect="non-scaling-stroke"/>
-            <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.16)" stroke-width="0.075" vector-effect="non-scaling-stroke"/>
-            <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.16)" stroke-width="0.075" vector-effect="non-scaling-stroke"/>
-          </svg>
-        </div>
-      </div>
+
     </div>
 
     <!-- Viewport Borders - Background Frame -->
@@ -187,6 +181,11 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="stars/vector3.js"></script>
+    <script src="stars/webgl-core.js"></script>
+    <script src="stars/tween.js"></script>
+    <script src="stars/time.js"></script>
+    <script src="stars/stars.js"></script>
     <script
       type="module"
       src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/7.1.0/ionicons/ionicons.esm.js"

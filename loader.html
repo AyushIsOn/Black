@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loader | BitkraftVC</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="SitePreloader_sitePreloader__cg1wG" id="sitePreloader">
+    <div class="SitePreloader_terminal__ginb_ copySizeLabelS" aria-disabled="true">
+      &nbsp;&nbsp;&nbsp;&nbsp;^5###########?<br>
+      &nbsp;&nbsp;^5&@@@@@@@@@@@@J<br>
+      ~P@@@@@@@@@@@@@@@J<br>
+      #@@@@@@&BBBBBBBBBP??????!<br>
+      B@@@@@@B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&@@@@@@G<br>
+      B@@@@@@B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&@@@@@@P<br>
+      B@@@@@@B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&@@@@@@P<br>
+      B@@@@@@B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&@@@@@@P<br>
+      #@@@@@@B.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&@@@@@@P<br>
+      !77777!G#########@@@@@@@P<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5@@@@@@@@@@@@@@&Y:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P@@@@@@@@@@@@#J:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JBGGGGGGGGGGJ.<br>
+      <br>// Loading website...<br>
+    </div>
+    <span class="SitePreloader_progress__mx_oW Heading_sizeHeroM__ctiN4">
+      <div class="SitePreloader_hidden__rLXw6">Loading Percentage:</div>
+      <span id="progressNumber">0</span>
+    </span>
+    <div class="viewport-borders SitePreloader_borders__AUaAA">
+      <div class="border"></div>
+    </div>
+  </div>
+  <script>
+    let responsiveConfig = { width: window.innerWidth, height: window.innerHeight };
+    function createViewportBorderForElement(borderElement) {
+      const { width, height } = responsiveConfig;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('width', `${width}px`);
+      svg.setAttribute('height', `${height}px`);
+      svg.setAttribute('fill', 'none');
+      const pathTop = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathTop.setAttribute('d', `M${width * 0.97},0.5h-${width * 0.33}c-2.3,0-4.4,0.9-6,2.5L${width * 0.6},42c-1.8,1.8-4.2,2.8-6.7,2.8H${width * 0.33}c-2.5,0-4.9-1-6.7-2.8L${width * 0.18},3c-1.6-1.6-3.8-2.5-6-2.5H${width * 0.03}`);
+      const lineRight = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineRight.setAttribute('x1', width - 0.5); lineRight.setAttribute('y1', height * 0.97); lineRight.setAttribute('x2', width - 0.5); lineRight.setAttribute('y2', height * 0.03);
+      const lineBottom = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineBottom.setAttribute('x1', width * 0.03); lineBottom.setAttribute('y1', height - 0.5); lineBottom.setAttribute('x2', width * 0.97); lineBottom.setAttribute('y2', height - 0.5);
+      const lineLeft = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineLeft.setAttribute('x1', 0.5); lineLeft.setAttribute('y1', height * 0.03); lineLeft.setAttribute('x2', 0.5); lineLeft.setAttribute('y2', height * 0.97);
+      const corners = [
+        `0.5,15 0.6,9.2 9.3,0.5 15,0.5`,
+        `${width * 0.98},0.5 ${width * 0.987},0.5 ${width - 0.5},9.2 ${width - 0.5},15`,
+        `${width - 0.5},${height - 15} ${width - 0.5},${height - 9.2} ${width * 0.987},${height - 0.5} ${width * 0.98},${height - 0.5}`,
+        `15,${height - 0.5} 9.2,${height - 0.5} 0.5,${height - 9.2} 0.5,${height - 15}`
+      ];
+      [pathTop,lineRight,lineBottom,lineLeft].forEach(e=>svg.appendChild(e));
+      corners.forEach(points=>{const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline'); poly.setAttribute('points',points); svg.appendChild(poly);});
+      borderElement.appendChild(svg);
+    }
+    function initSitePreloader(){
+      const preloader = document.getElementById('sitePreloader');
+      const progressNumber = document.getElementById('progressNumber');
+      const preloaderBorder = preloader.querySelector('.viewport-borders .border');
+      createViewportBorderForElement(preloaderBorder);
+      let progress=0; const int=setInterval(()=>{ progress += Math.random()*2+0.5; if(progress>100) progress=100; progressNumber.textContent=Math.floor(progress); if(progress>=100){ clearInterval(int); setTimeout(()=>{ window.location.href='/main.html'; },500);} },50);
+    }
+    document.addEventListener('DOMContentLoaded', initSitePreloader);
+  </script>
+</body>
+</html>

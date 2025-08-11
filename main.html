@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circular Futuristic Navigation Menu | Codegrid</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Drag to Start Component -->
+    <div class="drag-to-start" tabindex="0">
+      <div class="drag-label">
+        <span>Drag & hold to ENTER Synthetic Reality_</span>
+      </div>
+      <div class="drag-bounds">
+        <div class="drag-amount"></div>
+        <div class="drag-handle">
+          <div class="drag-square">
+            <div class="drag-ripple"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.9 6.4" xml:space="preserve" class="drag-icon">
+              <path d="M12.1 3.7h.1l.5-.5L10.2.7l-.5.5 1.5 1.6H1.6l1.6-1.6-.5-.5-2 1.9-.5.6 2.5 2.5.5-.6-1.6-1.5h9.6L9.7 5.1l.5.6z" fill="white"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="drag-progress">
+          <div class="drag-dotted"></div>
+          <div class="drag-center"></div>
+          <div class="drag-end"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-toggle-btn">
+      <div class="hamburger-bar"></div>
+      <div class="hamburger-bar"></div>
+    </div>
+
+    <div class="menu-overlay">
+      <div class="menu-bg"></div>
+
+      <div class="menu-overlay-nav">
+        <div class="close-btn">
+          <div class="close-btn-bar"></div>
+          <div class="close-btn-bar"></div>
+        </div>
+        <div class="menu-overlay-items">
+          <a href="#"><ion-icon name="logo-google"></ion-icon></a>
+          <a href="#"><ion-icon name="logo-github"></ion-icon></a>
+          <a href=""><ion-icon name="logo-vercel"></ion-icon></a>
+        </div>
+      </div>
+
+      <div class="menu-overlay-footer">
+        <p>Copyright &copy; 2025 All Rights Reserved</p>
+        <div class="menu-overlay-items">
+          <a href="#">Cookie Settings</a>
+          <a href="#">Privay Policy</a>
+          <a href="">Legal Disclaimer</a>
+        </div>
+      </div>
+
+      <div class="circular-menu">
+        <div class="joystick">
+          <ion-icon
+            name="grid-sharp"
+            class="center-icon center-main"
+          ></ion-icon>
+          <ion-icon
+            name="chevron-up-sharp"
+            class="center-icon center-up"
+          ></ion-icon>
+          <ion-icon
+            name="chevron-down-sharp"
+            class="center-icon center-down"
+          ></ion-icon>
+          <ion-icon
+            name="chevron-back-sharp"
+            class="center-icon center-left"
+          ></ion-icon>
+          <ion-icon
+            name="chevron-forward-sharp"
+            class="center-icon center-right"
+          ></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script
+      type="module"
+      src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/7.1.0/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/7.1.0/ionicons/ionicons.js"
+    ></script>
+    <script src="script.js"></script>
+  </body>
+</html>
