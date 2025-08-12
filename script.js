@@ -19,9 +19,10 @@ function initSitePreloader() {
         preloader.style.transition = 'opacity 1s ease';
         setTimeout(() => {
           preloader.style.display = 'none';
-          // Initialize star animation after preloader completes
+          // Initialize background effects after preloader completes
           setTimeout(() => {
-            initStarAnimation();
+            init3DElements(); // Initialize 3D objects first
+            initStarAnimation(); // Then initialize stars
           }, 500);
         }, 1000);
       }, 500);
@@ -923,4 +924,214 @@ function setupParallaxControls() {
     targetCameraX = mouseX * parallaxStrength;
     targetCameraY = mouseY * parallaxStrength;
   }, { passive: true });
+}
+
+// Three.js Scene Variables
+let threeScene, threeCamera, threeRenderer, threeLoader;
+let haldLogo, logoMixer;
+let threeCanvas, threeContainer;
+let isThreeInitialized = false;
+
+// Initialize 3D Elements (Three.js scene with hald_logo.glb)
+function init3DElements() {
+  if (isThreeInitialized) return;
+  
+  console.log('Initializing 3D elements...');
+  
+  // Wait for THREE to be available
+  if (typeof THREE === 'undefined') {
+    console.error('THREE.js not loaded, retrying in 100ms...');
+    setTimeout(init3DElements, 100);
+    return;
+  }
+  
+  // Get Three.js canvas and container
+  threeCanvas = document.getElementById('threejsCanvas');
+  threeContainer = document.querySelector('.threejs-container');
+  
+  if (!threeCanvas || !threeContainer) {
+    console.error('Three.js canvas or container not found');
+    return;
+  }
+  
+  try {
+    // Scene setup
+    threeScene = new THREE.Scene();
+    
+    // Camera setup (positioned to view the logo)
+    threeCamera = new THREE.PerspectiveCamera(
+      75, 
+      window.innerWidth / window.innerHeight, 
+      0.1, 
+      1000
+    );
+    threeCamera.position.set(0, 0, 5);
+    
+    // Renderer setup
+    threeRenderer = new THREE.WebGLRenderer({ 
+      canvas: threeCanvas,
+      alpha: true,
+      antialias: true 
+    });
+    threeRenderer.setSize(window.innerWidth, window.innerHeight);
+    threeRenderer.setPixelRatio(window.devicePixelRatio);
+    threeRenderer.setClearColor(0x000000, 0); // Transparent background
+    
+    console.log('Three.js scene, camera, and renderer initialized');
+  } catch (error) {
+    console.error('Error creating Three.js components:', error);
+    return;
+  }
+  
+  try {
+    // Lighting setup - neutral white lighting to avoid color tinting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Pure white ambient light
+    threeScene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 5, 5);
+    threeScene.add(directionalLight);
+    
+    const pointLight = new THREE.PointLight(0xffffff, 0.6, 100); // Pure white point light
+    pointLight.position.set(-5, 5, 5);
+    threeScene.add(pointLight);
+    
+    console.log('Pure white lighting system initialized');
+  } catch (error) {
+    console.error('Error creating lights:', error);
+    return;
+  }
+  
+  // GLTF Loader setup - skip for now and focus on test cube
+  console.log('THREE.GLTFLoader available:', typeof THREE.GLTFLoader);
+  
+  // Skip GLTF loading for now if loader not available
+  if (typeof THREE.GLTFLoader === 'undefined') {
+    console.log('GLTFLoader not available, proceeding with test cube only');
+  } else {
+    threeLoader = new THREE.GLTFLoader();
+    console.log('GLTFLoader created successfully');
+  }
+  
+  try {
+    // Create the main 3D scene
+    console.log('3D scene ready for GLTF model');
+    
+    // Make the Three.js container visible
+    threeContainer.classList.add('visible');
+    
+    // Start the render loop immediately
+    animate3D();
+  } catch (error) {
+    console.error('Error setting up 3D scene:', error);
+    return;
+  }
+
+  // GLTF Loader setup
+  console.log('THREE.GLTFLoader available:', typeof THREE.GLTFLoader);
+  
+  if (typeof THREE.GLTFLoader === 'undefined') {
+    console.log('GLTFLoader not available, proceeding without 3D model');
+  } else {
+    threeLoader = new THREE.GLTFLoader();
+    console.log('GLTFLoader created successfully');
+    
+    // Load the hald_logo2.glb model
+    threeLoader.load(
+      '/hald_logo2.glb',
+      function(gltf) {
+        console.log('GLTF model loaded successfully:', gltf);
+        
+        haldLogo = gltf.scene;
+        
+        // Scale and position the logo in top-left corner
+        haldLogo.scale.set(1.5, 1.5, 1.5); // Increased size for better visibility
+        
+        // Position in top-left corner (adjust based on camera view)
+        // Screen coordinates: left is negative X, top is positive Y
+        haldLogo.position.set(-3.5, 2.5, 0); // Top-left positioning
+        
+        // Rotate 90 degrees around X-axis
+        haldLogo.rotation.x = Math.PI / 2; // 90 degrees in radians
+        
+        // Apply pure white material with glow
+        haldLogo.traverse(function(child) {
+          if (child.isMesh) {
+            // Create white material with emissive glow
+            child.material = new THREE.MeshPhongMaterial({
+              color: 0xffffff, // Pure white
+              emissive: 0x222222, // White emissive glow
+              shininess: 100,
+              transparent: true,
+              opacity: 0.95
+            });
+            
+            // Also clear any vertex colors that might affect the appearance
+            if (child.geometry.attributes.color) {
+              child.geometry.deleteAttribute('color');
+            }
+          }
+        });
+        
+        threeScene.add(haldLogo);
+        
+        // Add a dedicated light near the logo for extra glow
+        const logoLight = new THREE.PointLight(0xffffff, 1.5, 10);
+        logoLight.position.set(-3.5, 2.5, 1); // Same position as logo but slightly forward
+        threeScene.add(logoLight);
+        
+        // Setup animation mixer if there are animations
+        if (gltf.animations && gltf.animations.length > 0) {
+          logoMixer = new THREE.AnimationMixer(haldLogo);
+          gltf.animations.forEach(clip => {
+            const action = logoMixer.clipAction(clip);
+            action.play();
+          });
+        }
+        
+        console.log('Hald logo added to scene successfully');
+      },
+      function(progress) {
+        console.log('Loading progress:', progress.loaded / progress.total * 100 + '%');
+      },
+      function(error) {
+        console.error('Error loading GLTF model:', error);
+      }
+    );
+  }
+  
+  // Handle window resize
+  window.addEventListener('resize', onThreeWindowResize);
+  
+  isThreeInitialized = true;
+}
+
+// Three.js animation loop
+function animate3D() {
+  requestAnimationFrame(animate3D);
+  
+  // Update animation mixer
+  if (logoMixer) {
+    logoMixer.update(0.016); // ~60fps
+  }
+  
+  // Logo is now stationary - no rotation
+  // if (haldLogo) {
+  //   haldLogo.rotation.y += 0.005;
+  //   haldLogo.rotation.x += 0.002;
+  // }
+  
+  // Render the scene
+  if (threeRenderer && threeScene && threeCamera) {
+    threeRenderer.render(threeScene, threeCamera);
+  }
+}
+
+// Handle window resize for Three.js
+function onThreeWindowResize() {
+  if (!threeCamera || !threeRenderer) return;
+  
+  threeCamera.aspect = window.innerWidth / window.innerHeight;
+  threeCamera.updateProjectionMatrix();
+  threeRenderer.setSize(window.innerWidth, window.innerHeight);
 }
